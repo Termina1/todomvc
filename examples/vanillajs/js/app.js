@@ -32,7 +32,7 @@ var todo = new Todo('todos-vanillajs', (todo) => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
     // Регистрация SW прошла успешно
-    console.log('ServiceWorker registration successful with scope: ',    registration.scope);
+    console.log('ServiceWorker registration successful with scope: ', registration.scope);
   }).catch(function(err) {
     // Не получилось зарегестрировать SW
     console.log('ServiceWorker registration failed: ', err);
