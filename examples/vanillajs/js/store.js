@@ -58,7 +58,9 @@ Store.prototype.findAll = function (callback) {
 };
 
 
-Store.prototype.send = function () {
+Store.prototype.commit = function (data, cb) {
+  let old = this.data;
+  this.data = data;
   fetch('/set', {
     method: 'post',
     headers: {
@@ -66,7 +68,12 @@ Store.prototype.send = function () {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(this.data)
-  });
+  }).then(resp => resp.json())
+    .then(data => this.data = data)
+    .catch(error => {
+      this.data = old;
+      cb.call(this, this.data, new Error("You are working offline, changes can't be made!"));
+    });
 };
 
 /**
@@ -77,33 +84,36 @@ Store.prototype.send = function () {
  * @param {function} callback The callback to fire after saving
  * @param {number} id An optional param to enter an ID of an item to update
  */
-Store.prototype.save = function (updateData, callback, id) {
+Store.prototype.save = function (updateData, callback, ids) {
   var todos = this.data;
 
   callback = callback || function () {};
 
   // If an ID was actually given, find the item and update each property
-  if (id) {
-    for (var i = 0; i < todos.length; i++) {
-      if (todos[i].id === id) {
-        for (var key in updateData) {
-          todos[i][key] = updateData[key];
-        }
-        break;
-      }
+  if (ids) {
+    if(!ids.length) {
+      ids = [ids];
     }
-
-    this.data = todos;
-    callback.call(this, this.data);
+    todos = todos
+      .map((item) => {
+        if(!ids.includes(item.id)) {
+          return item;
+        }
+        let update = Object.assign({}, item);
+        Object.keys(updateData).forEach((key) => {
+          update[key] = updateData[key];
+        });
+        return update;
+      });
+    this.commit(todos, callback);
+    callback.call(this, todos);
   } else {
     // Generate an ID
     updateData.id = new Date().getTime();
-
-    todos.push(updateData);
-    this.data = todos;
+    todos = todos.concat([updateData]);
+    this.commit(todos, callback);
     callback.call(this, [updateData]);
   }
-  this.send();
 };
 
 /**
@@ -112,19 +122,13 @@ Store.prototype.save = function (updateData, callback, id) {
  * @param {number} id The ID of the item you want to remove
  * @param {function} callback The callback to fire after saving
  */
-Store.prototype.remove = function (id, callback) {
-  var todos = this.data;
-
-  for (var i = 0; i < todos.length; i++) {
-    if (todos[i].id == id) {
-      todos.splice(i, 1);
-      break;
-    }
+Store.prototype.remove = function (ids, callback) {
+  if(!ids.length) {
+    ids = [ids];
   }
-
-  this.data = todos;
-  this.send();
-  callback.call(this, this.data);
+  let todos = this.data.filter(el => !ids.includes(el.id));
+  this.commit(todos, callback);
+  callback.call(this, todos);
 };
 
 /**
@@ -133,7 +137,6 @@ Store.prototype.remove = function (id, callback) {
  * @param {function} callback The callback to fire after dropping the data
  */
 Store.prototype.drop = function (callback) {
-  this.data = [];
-  this.send();
-  callback.call(this, this.data);
+  this.commit([], callback);
+  callback.call(this, []);
 };

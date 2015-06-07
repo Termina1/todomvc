@@ -96,9 +96,10 @@ Controller.prototype.addItem = function (title) {
     return;
   }
 
-  that.model.create(title, function () {
+  that.model.create(title, function (data, err) {
     that.view.render('clearNewTodo');
     that._filter(true);
+    that.showError(err);
   });
 };
 
@@ -107,8 +108,9 @@ Controller.prototype.addItem = function (title) {
  */
 Controller.prototype.editItem = function (id) {
   var that = this;
-  that.model.read(id, function (data) {
+  that.model.read(id, function (data, err) {
     that.view.render('editItem', {id: id, title: data[0].title});
+    that.showError(err);
   });
 };
 
@@ -118,8 +120,11 @@ Controller.prototype.editItem = function (id) {
 Controller.prototype.editItemSave = function (id, title) {
   var that = this;
   if (title.trim()) {
-    that.model.update(id, {title: title}, function () {
-      that.view.render('editItemDone', {id: id, title: title});
+    that.model.update(id, {title: title}, function (alldata, err) {
+      alldata.filter(el => el.id === id).forEach((el) => {
+        that.view.render('editItemDone', {id: el.id, title: el.title});
+      });
+      that.showError(err);
     });
   } else {
     that.removeItem(id);
@@ -145,11 +150,11 @@ Controller.prototype.editItemCancel = function (id) {
  */
 Controller.prototype.removeItem = function (id) {
   var that = this;
-  that.model.remove(id, function () {
-    that.view.render('removeItem', id);
+  that.model.remove(id, function (data, err) {
+    that.view.render('showEntries', data);
+    that._filter();
+    that.showError(err);
   });
-
-  that._filter();
 };
 
 /**
@@ -158,12 +163,21 @@ Controller.prototype.removeItem = function (id) {
 Controller.prototype.removeCompletedItems = function () {
   var that = this;
   that.model.read({ completed: true }, function (data) {
-    data.forEach(function (item) {
-      that.removeItem(item.id);
+    let ids = data.map(el => el.id);
+    that.model.remove(ids, function(data, err) {
+      that.view.render('showEntries', data);
+      that._filter();
+      that.showError(err);
     });
   });
 
-  that._filter();
+};
+
+
+Controller.prototype.showError = function (err) {
+  if(err) {
+    this.view.render('error', { error: err });
+  }
 };
 
 /**
@@ -177,16 +191,19 @@ Controller.prototype.removeCompletedItems = function () {
  */
 Controller.prototype.toggleComplete = function (id, completed, silent) {
   var that = this;
-  that.model.update(id, { completed: completed }, function () {
-    that.view.render('elementComplete', {
-      id: id,
-      completed: completed
+  that.model.update(id, { completed: completed }, function (data, err) {
+    data.filter(el => el.id === id).forEach(item => {
+      that.view.render('elementComplete', {
+        id: item.id,
+        completed: item.completed
+      });
+      that.showError(err);
+      if (!silent) {
+        that._filter();
+      }
     });
   });
 
-  if (!silent) {
-    that._filter();
-  }
 };
 
 /**
@@ -196,12 +213,18 @@ Controller.prototype.toggleComplete = function (id, completed, silent) {
 Controller.prototype.toggleAll = function (completed) {
   var that = this;
   that.model.read({ completed: !completed }, function (data) {
-    data.forEach(function (item) {
-      that.toggleComplete(item.id, completed, true);
+    let ids = data.map(el => el.id);
+    that.model.update(ids, { completed: completed }, function(data) {
+      data.filter(el => ids.includes(el.id))
+        .forEach(item => {
+          that.view.render('elementComplete', {
+            id: item.id,
+            completed: item.completed
+          });
+        });
+      that._filter();
     });
   });
-
-  that._filter();
 };
 
 /**

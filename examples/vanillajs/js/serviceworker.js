@@ -1,13 +1,18 @@
-require('serviceworker-cache-polyfill');
+import {} from 'babel-core/polyfill';
+import {} from 'serviceworker-cache-polyfill';
 
-var CACHE_NAME = 'v1';
+const CACHE_NAME = 'v4';
 
-var urlsToCache = [
+const urlsToCache = [
   '/',
   '/app.js',
-  'node_modules/todomvc-common/base.css',
-  'node_modules/todomvc-app-css/index.css'
+  '/node_modules/todomvc-common/base.css',
+  '/node_modules/todomvc-app-css/index.css',
 ];
+
+const whiteList = urlsToCache.concat([
+  '/get'
+]);
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -18,15 +23,27 @@ self.addEventListener('install', function(event) {
   );
 });
 
+const host = location.protocol + "//" + location.host;
+
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request)
+    caches.match(event.request, { cacheName: CACHE_NAME })
       .then(function(response) {
-        if (response) {
+        return fetch(event.request).then((response) => {
+
+          let isAllowed = whiteList.includes(response.url.replace(host, ''));
+
+          if(isAllowed && response.status === 200) {
+            return caches.open(CACHE_NAME)
+              .then(cache => cache.put(event.request, response.clone()))
+              .then(r => response);
+          }
           return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+        }, function() {
+          if(response) {
+            return Promise.resolve(response.clone());
+          }
+        });
+      })
+    );
 });

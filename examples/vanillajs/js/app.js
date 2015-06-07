@@ -1,10 +1,10 @@
+import {} from 'babel-core/polyfill';
 import {} from "./helpers";
 import {Store} from "./store";
 import {Model} from "./model";
 import {Template} from "./template";
 import {View} from "./view";
 import {Controller} from "./controller";
-
 /**
  * Sets up a brand new Todo list.
  *

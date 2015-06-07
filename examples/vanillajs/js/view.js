@@ -22,6 +22,7 @@ export function View(template) {
     this.$footer = qs('#footer');
     this.$toggleAll = qs('#toggle-all');
     this.$newTodo = qs('#new-todo');
+    this.$error = qs('#error');
 }
 
 View.prototype._removeItem = function (id) {
@@ -80,7 +81,9 @@ View.prototype._editItemDone = function (id, title) {
     }
 
     var input = qs('input.edit', listItem);
-    listItem.removeChild(input);
+    if(input) {
+      listItem.removeChild(input);
+    }
 
     listItem.className = listItem.className.replace('editing', '');
 
@@ -94,6 +97,9 @@ View.prototype.render = function (viewCmd, parameter) {
     var viewCommands = {
         showEntries: function () {
             that.$todoList.innerHTML = that.template.show(parameter);
+        },
+        error: function(error) {
+          that.$error.innerHTML = parameter.error.message;
         },
         removeItem: function () {
             that._removeItem(parameter);

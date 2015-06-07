@@ -65,8 +65,8 @@ Model.prototype.read = function (query, callback) {
  * @param {object} data The properties to update and their new value
  * @param {function} callback The callback to fire when the update is complete.
  */
-Model.prototype.update = function (id, data, callback) {
-  this.storage.save(data, callback, id);
+Model.prototype.update = function (ids, data, callback) {
+  this.storage.save(data, callback, ids);
 };
 
 /**
