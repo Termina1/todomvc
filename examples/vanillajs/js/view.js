@@ -213,5 +213,7 @@ View.prototype.bind = function (event, handler) {
 
     } else if (event === 'itemEditCancel') {
         that._bindItemEditCancel(handler);
+    } else if (event === 'setReminder') {
+      $on(qs('#notify'), 'click', handler);
     }
 };

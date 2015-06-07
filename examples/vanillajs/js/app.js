@@ -5,6 +5,7 @@ import {Model} from "./model";
 import {Template} from "./template";
 import {View} from "./view";
 import {Controller} from "./controller";
+import {pusher} from "./pusher";
 /**
  * Sets up a brand new Todo list.
  *
@@ -30,10 +31,7 @@ var todo = new Todo('todos-vanillajs', (todo) => {
 
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
-    // Регистрация SW прошла успешно
-    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-  }).catch(function(err) {
+  navigator.serviceWorker.register('/serviceworker.js').then(pusher).catch(function(err) {
     // Не получилось зарегестрировать SW
     console.log('ServiceWorker registration failed: ', err);
   });

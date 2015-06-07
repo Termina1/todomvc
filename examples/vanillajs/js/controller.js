@@ -1,3 +1,5 @@
+import {push} from "./pusher";
+
 /**
  * Takes a model and view and acts as the controller between them
  *
@@ -20,6 +22,12 @@ export function Controller(model, view) {
 
   that.view.bind('itemEditDone', function (item) {
     that.editItemSave(item.id, item.title);
+  });
+
+  that.view.bind('setReminder', function() {
+    push().catch(e => {
+      that.showError(new Error("Can't send push notification. Offline or unregistered subscription!"))
+    });
   });
 
   that.view.bind('itemEditCancel', function (item) {

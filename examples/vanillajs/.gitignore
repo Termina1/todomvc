@@ -15,4 +15,5 @@ node_modules/node-libs-browser
 node_modules/vinyl-named
 node_modules/.bin
 node_modules/serviceworker-cache-polyfill
+node_modules/request
 build

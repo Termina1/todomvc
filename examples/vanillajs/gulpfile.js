@@ -13,7 +13,7 @@ gulp.task('js', function() {
 
 
 gulp.task('index', function() {
-  return gulp.src('index.html')
+  return gulp.src(['index.html', 'manifest.json'])
     .pipe(gulp.dest('./build/'));
 });
 

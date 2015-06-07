@@ -47,3 +47,35 @@ self.addEventListener('fetch', function(event) {
       })
     );
 });
+
+
+self.addEventListener("push", function(event) {
+  let tag = 'unfinished-todo';
+  let title = "Unfinished business!";
+  event.waitUntil(
+    fetch('/get')
+      .then(r => r.json())
+      .then(r => r.filter(t => !t.completed).length)
+      .then(count => self.registration.showNotification(title, {
+        tag,
+        body: `You have ${count} unfinished todo!`
+      }))
+  );
+});
+
+
+self.addEventListener('notificationclick', function(event) {
+  event.waitUntil(clients.matchAll({
+    type: "window"
+  }).then(function(clientList) {
+    for (var i = 0; i < clientList.length; i++) {
+      var client = clientList[i];
+      if (client.url.indexOf(location.host) !== false)
+        return client.focus();
+    }
+    if (clients.openWindow) {
+      return clients.openWindow('/');
+    }
+  }));
+
+});
