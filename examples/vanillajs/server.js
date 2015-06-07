@@ -4,7 +4,8 @@ var app = express();
 
 
 var storage = [];
-app.use(express.static('.'));
+app.use(express.static('./build'));
+app.use('/node_modules', express.static('./node_modules/'));
 app.use(parser.json());
 
 

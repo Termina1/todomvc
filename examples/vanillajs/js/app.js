@@ -1,27 +1,40 @@
-/*global app, $on */
-(function () {
-  'use strict';
+import {} from "./helpers";
+import {Store} from "./store";
+import {Model} from "./model";
+import {Template} from "./template";
+import {View} from "./view";
+import {Controller} from "./controller";
 
-  /**
-   * Sets up a brand new Todo list.
-   *
-   * @param {string} name The name of your new to do list.
-   */
-  function Todo(name, cb) {
-    this.storage = new app.Store(name, function(r) {
-      this.model = new app.Model(this.storage);
-      this.template = new app.Template();
-      this.view = new app.View(this.template);
-      this.controller = new app.Controller(this.model, this.view);
-      cb(this);
-    }.bind(this));
-  }
-
-  var todo = new Todo('todos-vanillajs', function(todo) {
-    function setView() {
-      todo.controller.setView(document.location.hash);
-    }
-    setView();
-    $on(window, 'hashchange', setView);
+/**
+ * Sets up a brand new Todo list.
+ *
+ * @param {string} name The name of your new to do list.
+ */
+function Todo(name, cb) {
+  this.storage = new Store(name, (r) => {
+    this.model = new Model(this.storage);
+    this.template = new Template();
+    this.view = new View(this.template);
+    this.controller = new Controller(this.model, this.view);
+    cb(this);
   });
-})();
+}
+
+var todo = new Todo('todos-vanillajs', (todo) => {
+  function setView() {
+    todo.controller.setView(document.location.hash);
+  }
+  setView();
+  $on(window, 'hashchange', setView);
+});
+
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
+    // Регистрация SW прошла успешно
+    console.log('ServiceWorker registration successful with scope: ',    registration.scope);
+  }).catch(function(err) {
+    // Не получилось зарегестрировать SW
+    console.log('ServiceWorker registration failed: ', err);
+  });
+}

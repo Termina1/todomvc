@@ -4,9 +4,17 @@
     "body-parser": "^1.12.4",
     "express": "^4.12.4",
     "todomvc-app-css": "^1.0.1",
-    "todomvc-common": "^1.0.1"
+    "todomvc-common": "^1.0.1",
+    "serviceworker-cache-polyfill": "git://github.com/coonsta/cache-polyfill.git"
   },
   "devDependencies": {
-    "jasmine-core": "^0.3.0"
+    "babel-core": "^5.5.4",
+    "babel-loader": "^5.1.4",
+    "gulp": "^3.9.0",
+    "gulp-webpack": "^1.5.0",
+    "jasmine-core": "^0.3.0",
+    "node-libs-browser": "^0.5.2",
+    "vinyl-named": "^1.1.0",
+    "webpack": "^1.9.10"
   }
 }
