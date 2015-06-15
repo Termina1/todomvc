@@ -8,13 +8,18 @@ export function pusher(regstate) {
       }
       return subscription;
     }).then(subscription => {
-      subId = subscription.endpoint.split('/').slice(-1)[0];
+      if(subscription.subscriptionId) {
+        subId = subscription.subscriptionId;
+      } else {
+        subId = subscription.endpoint.split('/').slice(-1)[0];
+      }
+      fetch(`/register?subId=${subId}`);
     });
 }
 
 export function push() {
   if(subId) {
-    return fetch(`/notify?subId=${subId}`);
+    return fetch('/notify');
   }
   return Promise.reject();
 }

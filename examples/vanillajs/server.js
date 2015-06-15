@@ -5,8 +5,10 @@ var express = require('express');
 var parser = require('body-parser');
 var app = express();
 var request = require('request');
+var uniq = require('lodash.uniq');
 
 var storage = [];
+var clients = [];
 app.use(express.static('./build'));
 app.use('/node_modules', express.static('./node_modules/'));
 app.use(parser.json());
@@ -21,6 +23,11 @@ app.post('/set', function(req, res) {
   res.json(storage);
 });
 
+app.get('/register', function(req, res) {
+  clients.push(req.query.subId);
+  clients = uniq(clients);
+  res.json({ok: true});
+});
 
 app.get('/notify', function(req, res) {
   setTimeout(function() {
@@ -30,7 +37,7 @@ app.get('/notify', function(req, res) {
         "Authorization": "key=" + API_KEY
       },
       method: 'POST',
-      json: { registration_ids: [req.query.subId] }
+      json: { registration_ids: clients }
     }, function(err, resp) {
       console.log(err, resp.body);
     })

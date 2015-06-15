@@ -6,6 +6,7 @@ import {Template} from "./template";
 import {View} from "./view";
 import {Controller} from "./controller";
 import {pusher} from "./pusher";
+
 /**
  * Sets up a brand new Todo list.
  *
