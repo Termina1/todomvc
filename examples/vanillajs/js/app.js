@@ -32,8 +32,9 @@ var todo = new Todo('todos-vanillajs', (todo) => {
 
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/serviceworker.js').then(pusher).catch(function(err) {
+  navigator.serviceWorker.register('/serviceworker.js').catch(function(err) {
     // Не получилось зарегестрировать SW
     console.log('ServiceWorker registration failed: ', err);
   });
+  navigator.serviceWorker.ready.then(pusher);
 }
