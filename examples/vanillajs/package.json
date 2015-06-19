@@ -7,7 +7,8 @@
     "request": "^2.57.0",
     "serviceworker-cache-polyfill": "git://github.com/coonsta/cache-polyfill.git",
     "todomvc-app-css": "^1.0.1",
-    "todomvc-common": "^1.0.1"
+    "todomvc-common": "^1.0.1",
+    "whatwg-fetch": "^0.9.0"
   },
   "devDependencies": {
     "babel-core": "^5.5.4",
