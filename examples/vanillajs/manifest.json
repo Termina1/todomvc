@@ -6,5 +6,14 @@
   "gcm_sender_id": "75032625662",
 
   "//": "gcm_user_visible_only is only needed until Chrome 44 is in stable ",
-  "gcm_user_visible_only": true
+  "gcm_user_visible_only": true,
+  "messages": [
+   { "push": "/index.html"},
+   { "push-register": "/index.html"}
+  ],
+  "permissions": {
+    "push": {
+      "description": "Need push"
+    }
+  }
 }
