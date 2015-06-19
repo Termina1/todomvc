@@ -1,4 +1,4 @@
-var API_KEY = 'AIzaSyC8rmKbHfxDbqyS7kfdYyKNtstIKBBDrB8';
+var API_KEY = 'AIzaSyA98YIW2kq0kMXs9ZTTTPrwRaFdTjEyHvo';
 var GCM_ENDPOINT = 'https://android.googleapis.com/gcm/send';
 
 var express = require('express');
